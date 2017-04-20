@@ -1,0 +1,6 @@
+C:\Users\stase\OneDrive\Documents\Visual Studio 2015\Projects\ProxyServer\Compsci215ProxyServer\Compsci215ProxyServer\bin\Debug\Compsci215ProxyServer.exe.config
+C:\Users\stase\OneDrive\Documents\Visual Studio 2015\Projects\ProxyServer\Compsci215ProxyServer\Compsci215ProxyServer\bin\Debug\Compsci215ProxyServer.exe
+C:\Users\stase\OneDrive\Documents\Visual Studio 2015\Projects\ProxyServer\Compsci215ProxyServer\Compsci215ProxyServer\bin\Debug\Compsci215ProxyServer.pdb
+C:\Users\stase\OneDrive\Documents\Visual Studio 2015\Projects\ProxyServer\Compsci215ProxyServer\Compsci215ProxyServer\obj\Debug\Compsci215ProxyServer.csprojResolveAssemblyReference.cache
+C:\Users\stase\OneDrive\Documents\Visual Studio 2015\Projects\ProxyServer\Compsci215ProxyServer\Compsci215ProxyServer\obj\Debug\Compsci215ProxyServer.exe
+C:\Users\stase\OneDrive\Documents\Visual Studio 2015\Projects\ProxyServer\Compsci215ProxyServer\Compsci215ProxyServer\obj\Debug\Compsci215ProxyServer.pdb

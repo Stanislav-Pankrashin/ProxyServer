@@ -14,6 +14,7 @@ namespace Compsci215ProxyServer {
 
         private static HttpListener HttpInstance;
         private static HttpClient ClientInstance;
+        private static String currentURI;
        
         //Creates a new instance of the listener if there isnt one already, controls it so there can be only one at a time
         public static HttpListener HttpListenerInstance {
@@ -50,18 +51,39 @@ namespace Compsci215ProxyServer {
             HttpListenerInstance.Start();
         }
 
+        
         //sends a request to the server
         public static async void sendRequest(HttpListenerContext requestInfo) {
             Console.WriteLine(requestInfo.Request.RawUrl.Trim('/'));
-            HttpResponseMessage responseString = await HttpClientInstance.GetAsync(requestInfo.Request.RawUrl.Trim('/'));
-            Console.WriteLine(responseString);
 
-            byte[] buffer = await responseString.Content.ReadAsByteArrayAsync();
+            if (currentURI == null) {
+                currentURI = requestInfo.Request.RawUrl.Trim('/');
+            }
 
-            requestInfo.Response.OutputStream.Write(buffer, 0, buffer.Length);
+            String currentRequest = requestInfo.Request.RawUrl.Trim('/');
+            if (currentRequest.StartsWith("http")) {
+                HttpResponseMessage responseString = await HttpClientInstance.GetAsync(currentURI);
+                Console.WriteLine(responseString);
+
+                byte[] buffer = await responseString.Content.ReadAsByteArrayAsync();
+
+                requestInfo.Response.OutputStream.Write(buffer, 0, buffer.Length);
+                requestInfo.Response.OutputStream.Close();
+            } else {
+                currentRequest = currentURI + '/' + currentRequest;
+                HttpResponseMessage responseString = await HttpClientInstance.GetAsync(currentRequest);
+                Console.WriteLine(responseString);
+
+                byte[] buffer = await responseString.Content.ReadAsByteArrayAsync();
+
+                requestInfo.Response.OutputStream.Write(buffer, 0, buffer.Length);
+                requestInfo.Response.OutputStream.Close();
+
+            }
+
 
         }
-
+        
 
     }
 }
