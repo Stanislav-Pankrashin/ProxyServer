@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,18 +12,19 @@ namespace Compsci215ProxyServer {
     // A public static class that manages the Http instance
 
     static class HttpManager {
-        private static HttpListener HttpInstance;
+        private static TcpListener TcpInstance;
+        private static IPAddress TcpIp;
+        private static int TcpPort;
         private static HttpClient ClientInstance;
         private static String currentURI;
 
-        //Creates a new instance of the listener if there isnt one already, controls it so there can be only one at a time
-        public static HttpListener HttpListenerInstance {
+        public static TcpListener TcpListenerInstance {
             get {
-                if (HttpInstance == null) {
-                    HttpInstance = new HttpListener();
-                    return HttpInstance;
+                if (TcpInstance == null) {
+                    TcpInstance = new TcpListener(TcpIp, TcpPort);
+                    return TcpInstance;
                 } else {
-                    return HttpInstance;
+                    return TcpInstance;
                 }
             }
         }
@@ -37,29 +39,28 @@ namespace Compsci215ProxyServer {
                     return ClientInstance;
                 }
             }
-
         }
 
-        //adds the set prefix to the set of URI prefixes
-        public static void addPrefix(string prefix) {
-            HttpListenerInstance.Prefixes.Add(prefix);
-        }
 
         //starts the listener
         public static void startListener() {
-            HttpListenerInstance.Start();
+            TcpListenerInstance.Start();
+        }
+
+        public static void setParams(string ip, string port) {
+            TcpIp = IPAddress.Parse(ip);
+            TcpPort = Int32.Parse(port);
         }
 
 
         //sends a request to the server
-        public static async void sendRequest(HttpListenerContext requestInfo) {
-            Console.WriteLine(requestInfo.Request.RawUrl.Trim('/'));
+        public static async void sendRequest(TcpClient requestInfo) {
+            NetworkStream stream = requestInfo.GetStream();
+            currentURI = getURI(requestInfo, stream);
+            //TODO, replace with a method that gets the url from the request
 
-            if (currentURI == null) {
-                currentURI = requestInfo.Request.RawUrl.Trim('/');
-            }
 
-            String currentRequest = requestInfo.Request.RawUrl.Trim('/');
+            String currentRequest = currentURI;
             //if the request is not a valid ur, prefix it with the target url
             if (!currentRequest.StartsWith("http")) {
                 currentRequest = currentURI + '/' + currentRequest;
@@ -72,14 +73,37 @@ namespace Compsci215ProxyServer {
             //write the http response to the console
             byte[] buffer = await responseString.Content.ReadAsByteArrayAsync();
 
-            requestInfo.Response.OutputStream.Write(buffer, 0, buffer.Length);
-            requestInfo.Response.OutputStream.Close();
+            
+            stream.Write(buffer, 0, buffer.Length);
+            stream.Close();
 
-
-
+            //requestInfo.Response.OutputStream.Write(buffer, 0, buffer.Length);
+            //requestInfo.Response.OutputStream.Close();
 
         }
+        public static string getURI(TcpClient requestInfo, NetworkStream stream) {
 
+            Byte[] bytes = new Byte[256];
+            string data = null;
 
+            // Get a stream object for reading and writing
+            
+
+            int i;
+
+            // Loop to receive all the data sent by the client.
+            while ((i = stream.Read(bytes, 0, bytes.Length)) != 0) {
+                Console.WriteLine("Loop!");
+                // Translate data bytes to a ASCII string.
+                data = System.Text.Encoding.ASCII.GetString(bytes, 0, i);
+                
+                Console.WriteLine("Received: {0}", data);
+                break;
+            }
+
+            string getLine = data.Split('\n')[0];
+            Console.WriteLine("GetLine: " + getLine);
+            return getLine.Split(' ')[1].Trim('/');
+        }
     }
 }

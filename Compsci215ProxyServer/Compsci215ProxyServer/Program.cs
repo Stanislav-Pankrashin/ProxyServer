@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -25,7 +26,7 @@ namespace Compsci215ProxyServer {
 
             string IP_address = IP_Addresses[int.Parse(input) - 1].ToString();
 
-            Console.WriteLine("Which port would you like to use? :");
+            Console.WriteLine("Which port would you like to use? (8081-8091 are allowed on the uni computers):");
             string port = Console.ReadLine();
 
 
@@ -36,14 +37,13 @@ namespace Compsci215ProxyServer {
                           prefix
                 );
 
-            HttpManager.addPrefix("http://" + IP_address + ":" + port + "/");
+            HttpManager.setParams(IP_address, port);
 
             HttpManager.startListener();
             //endlessly run the listener for all requests
             while (true) {
                 Console.WriteLine("Listening....");
-                HttpListenerContext response = HttpManager.HttpListenerInstance.GetContext();
-                //System.Console.WriteLine(response.Request);
+                TcpClient response = HttpManager.TcpListenerInstance.AcceptTcpClient();
                 Console.WriteLine("You have been heard!");
                 Console.WriteLine("Sending Request...");
                 HttpManager.sendRequest(response);
