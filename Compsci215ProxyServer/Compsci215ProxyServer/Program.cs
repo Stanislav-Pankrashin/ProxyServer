@@ -47,6 +47,7 @@ namespace Compsci215ProxyServer {
                 Console.WriteLine("You have been heard!");
                 Console.WriteLine("Sending Request...");
                 HttpManager.sendRequest(response);
+                
 
 
             }

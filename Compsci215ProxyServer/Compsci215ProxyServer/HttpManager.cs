@@ -56,10 +56,12 @@ namespace Compsci215ProxyServer {
         //sends a request to the server
         public static async void sendRequest(TcpClient requestInfo) {
             NetworkStream stream = requestInfo.GetStream();
-            currentURI = getURI(requestInfo, stream);
+            if (currentURI == null) {
+                currentURI = getURI(requestInfo, stream);
+            }
             //TODO, replace with a method that gets the url from the request
 
-
+            Console.WriteLine(currentURI);
             String currentRequest = currentURI;
             //if the request is not a valid ur, prefix it with the target url
             if (!currentRequest.StartsWith("http")) {
@@ -73,9 +75,10 @@ namespace Compsci215ProxyServer {
             //write the http response to the console
             byte[] buffer = await responseString.Content.ReadAsByteArrayAsync();
 
-            
             stream.Write(buffer, 0, buffer.Length);
             stream.Close();
+            
+            
 
             //requestInfo.Response.OutputStream.Write(buffer, 0, buffer.Length);
             //requestInfo.Response.OutputStream.Close();
