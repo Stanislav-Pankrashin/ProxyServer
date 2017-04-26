@@ -56,21 +56,20 @@ namespace Compsci215ProxyServer {
         //sends a request to the server
         public static async void sendRequest(TcpClient requestInfo) {
             NetworkStream stream = requestInfo.GetStream();
-            if (currentURI == null) {
-                currentURI = getURI(requestInfo, stream);
-            }
-            //TODO, replace with a method that gets the url from the request
 
-            Console.WriteLine(currentURI);
-            String currentRequest = currentURI;
-            //if the request is not a valid ur, prefix it with the target url
+            //Console.WriteLine(currentURI);
+            String currentRequest = getURI(requestInfo, stream);
+            if (currentRequest.StartsWith("http")) {
+                currentURI = currentRequest;
+            }
+            //if the request is not a valid uri, prefix it with the target url
             if (!currentRequest.StartsWith("http")) {
                 currentRequest = currentURI + '/' + currentRequest;
             }
-
+            Console.WriteLine("Request: " + currentRequest);
             HttpResponseMessage responseString = await HttpClientInstance.GetAsync(currentRequest);
             //echo the result to the console
-            Console.WriteLine(responseString);
+            //Console.WriteLine(responseString);
 
             //write the http response to the console
             byte[] buffer = await responseString.Content.ReadAsByteArrayAsync();
@@ -79,18 +78,11 @@ namespace Compsci215ProxyServer {
             stream.Close();
             
             
-
-            //requestInfo.Response.OutputStream.Write(buffer, 0, buffer.Length);
-            //requestInfo.Response.OutputStream.Close();
-
         }
         public static string getURI(TcpClient requestInfo, NetworkStream stream) {
 
             Byte[] bytes = new Byte[256];
             string data = null;
-
-            // Get a stream object for reading and writing
-            
 
             int i;
 
@@ -100,7 +92,7 @@ namespace Compsci215ProxyServer {
                 // Translate data bytes to a ASCII string.
                 data = System.Text.Encoding.ASCII.GetString(bytes, 0, i);
                 
-                Console.WriteLine("Received: {0}", data);
+                //Console.WriteLine("Received: {0}", data);
                 break;
             }
 
