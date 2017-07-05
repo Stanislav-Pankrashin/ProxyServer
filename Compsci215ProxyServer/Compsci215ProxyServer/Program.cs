@@ -20,6 +20,7 @@ namespace Compsci215ProxyServer {
                 Console.WriteLine((counter++).ToString() + ": " + e.ToString());
 
             }
+
             Console.WriteLine("Which one? : ");
             string input = Console.ReadLine();
 
@@ -43,7 +44,7 @@ namespace Compsci215ProxyServer {
             while (true) {
                 Console.WriteLine("Listening....");
                 HttpListenerContext response = HttpManager.HttpListenerInstance.GetContext();
-                //System.Console.WriteLine(response.Request);
+                System.Console.WriteLine(response.Request);
                 Console.WriteLine("You have been heard!");
                 Console.WriteLine("Sending Request...");
                 HttpManager.sendRequest(response);

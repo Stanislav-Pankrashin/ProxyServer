@@ -37,7 +37,6 @@ namespace Compsci215ProxyServer {
                     return ClientInstance;
                 }
             }
-
         }
 
         //adds the set prefix to the set of URI prefixes
@@ -50,16 +49,18 @@ namespace Compsci215ProxyServer {
             HttpListenerInstance.Start();
         }
 
-
         //sends a request to the server
         public static async void sendRequest(HttpListenerContext requestInfo) {
-            Console.WriteLine(requestInfo.Request.RawUrl.Trim('/'));
+            String currentRequest = requestInfo.Request.RawUrl.Trim('/');
+            Console.WriteLine(currentRequest);
 
             if (currentURI == null) {
-                currentURI = requestInfo.Request.RawUrl.Trim('/');
+                currentURI = currentRequest;
             }
 
-            String currentRequest = requestInfo.Request.RawUrl.Trim('/');
+            if (currentURI != null && currentRequest.StartsWith("http")) {
+                currentURI = currentRequest;
+            }
             //if the request is not a valid ur, prefix it with the target url
             if (!currentRequest.StartsWith("http")) {
                 currentRequest = currentURI + '/' + currentRequest;
@@ -67,7 +68,7 @@ namespace Compsci215ProxyServer {
 
             HttpResponseMessage responseString = await HttpClientInstance.GetAsync(currentRequest);
             //echo the result to the console
-            Console.WriteLine(responseString);
+            //Console.WriteLine(responseString);
 
             //write the http response to the console
             byte[] buffer = await responseString.Content.ReadAsByteArrayAsync();
@@ -75,11 +76,6 @@ namespace Compsci215ProxyServer {
             requestInfo.Response.OutputStream.Write(buffer, 0, buffer.Length);
             requestInfo.Response.OutputStream.Close();
 
-
-
-
         }
-
-
     }
 }
